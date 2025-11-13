@@ -3,7 +3,7 @@ $claro: #f0ebeb;
 $card:#dcdff2;
 $sombrasBox: 0 4px 10px rgba(0, 0, 0, 0.3);
 $destaque-rosa: #ff3d7f transparent;
-$gradiente-rosa: linear-gradient(135deg, #2f1048, #e4018d);
+$gradiente-rosa: linear-gradient(135deg, #18dcff, #2967ec);
 $foco: #4c0f32;
 $botao-azul: linear-gradient(135deg, #2cd0e5, #2553af);
 $botao-amarelo: linear-gradient(135deg, #b9820b, #ede203);
@@ -11,7 +11,7 @@ $box-fundo: rgba(0, 0, 0, 0.8);
 $borda: 1px solid $fundo;
 
 
-* {
+*{
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -28,7 +28,7 @@ body {
 
 /* BOTÃO */
 button {
-  margin-top: 1rem;
+  margin-top: 2rem;
   align-self: center;
   background: $gradiente-rosa;
   color: $claro;

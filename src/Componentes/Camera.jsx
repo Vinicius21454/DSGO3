@@ -1,28 +1,31 @@
+// Ref: é o hook que permite que eu interaja com os periféricos do usuários
 import { useState, useEffect, useRef } from "react";
 
-export function Camera({ onFotoTirada }){
+export function Camera({ onFotoTirada }) {
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
     const [foto, setFoto] = useState(null);
 
-    // useEffect para iniciar a camera quando o componente for montado
-    useEffect(() =>{
+    // Inicializa a câmera
+    useEffect(() => {
         iniciarCamera();
-    },[]);
+    }, []);
 
     const iniciarCamera = async () => {
-        try{
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            if(videoRef.current){
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: true,
+            });
+
+            if (videoRef.current) {
                 videoRef.current.srcObject = stream;
             }
         }
-        catch(error){
-            console.error("error ao iniciar a camera:", error);
+        catch(error) {
+            console.error("Erro ao buscar vídeo/imagem: ", error);
         }
-    };
+    }
 
-    // função para tirar a foto
     const tirarFoto = () => {
         const video = videoRef.current;
         const canvas = canvasRef.current;
@@ -34,39 +37,51 @@ export function Camera({ onFotoTirada }){
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         const imagem = canvas.toDataURL("image/png");
+
         setFoto(imagem);
-        
-        // Chamar onFotoTirada SE ela foi passada como prop
+
         if (onFotoTirada) {
+            // Permite a comunicação com as props
             onFotoTirada(imagem);
         }
     }
 
-    const reiniciarCamera = () => {
+    function reiniciar() {
         setFoto(null);
         iniciarCamera();
     }
 
-    return(        <section className="camera-box">
-            <h2>Captura da camera</h2>
-            <div className="preview">
-                {!foto ?(
-                    <video ref={videoRef} autoPlay playsInline aria-label="Fluxo de camera" />
-                ):
-                (
-                    <img src={foto} alt="Foto capturada" />
-                )}
-            </div>
-            <div>
-                {!foto ? (
-                    <button onClick={tirarFoto}>Tirar Foto</button>
-                ) : (
-                    <button onClick={reiniciarCamera}>Nova Foto</button>
-                )}
-            </div>
-            <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
-        </section>
+    function salvarFoto() {
+        const link = document.createElement("a");
+        link.href = foto;
+        link.download = "Foto.png";
+        link.click();
+    }
 
-
-    )
-} 
+    return (
+        <main>
+            <section className="camera-box">
+                <h2>Captura de câmera</h2>
+                <div className="preview">
+                    {!foto ? (
+                        <video ref={videoRef} autoPlay playsInline aria-label="Fluxo de câmera"/>
+                    ) : (
+                        <img src={foto} alt="Foto capturada" />
+                    )}
+                </div>
+                <div>
+                    {!foto ? (
+                        <button type="button" onClick={tirarFoto}>Tirar foto</button>
+                    ) : (
+                        <div>
+                            <button type="button" onClick={reiniciar}>Nova foto</button>
+                            
+                        </div>
+                    )
+                    }
+                </div>
+                <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
+            </section>
+        </main>
+    );
+}

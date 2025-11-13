@@ -6,16 +6,17 @@
   backdrop-filter: blur(8px);
   padding: 3rem 2rem;
   border-radius: 20px;
-  color: #dfcaf9;
+  color: #0dbaff;
   max-width: 1200px;
   margin: 2rem auto 7rem auto;
   overflow-y: auto;
   max-height: 80vh;
+  
   /* scroll controlado */
 
   /* scroll estilizado */
   scrollbar-width: thin;
-  scrollbar-color:$destaque-rosa;
+  scrollbar-color:  #22c0ff transparent;
   &::-webkit-scrollbar {
     width: 8px;
   }
@@ -34,22 +35,23 @@
 .conteiner h2 {
   text-align: center;
   margin-bottom: 1rem;
-  font-size: 2rem;
+  font-size: 3rem;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 /* GRID DE MISSÕES */
 .missoes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
   gap: 2rem;
+  margin-top: 4rem;
 }
 
 /* CARD */
 .missao-card {
   background-color:$card;
   color: #222;
-  border-radius: 16px;
+  border-radius: 1.5rem;
   overflow: hidden;
   display: flex;
   flex-direction: column;
