@@ -14,7 +14,7 @@ export function Missao() {
 
   return (
     <section className='conteiner'>
-      <h2>Missões</h2>
+      <h2>Perguntas</h2>
       <div className="missoes-grid">
         {missoes.map((m) => (
           <MissaoCard
