@@ -1,87 +1,113 @@
-// Ref: é o hook que permite que eu interaja com os periféricos do usuários
-import { useState, useEffect, useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 
-export function Camera({ onFotoTirada }) {
-    const videoRef = useRef(null);
-    const canvasRef = useRef(null);
-    const [foto, setFoto] = useState(null);
+export function Camera() {
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [fotos, setFotos] = useState([]);
 
-    // Inicializa a câmera
-    useEffect(() => {
-        iniciarCamera();
-    }, []);
+  useEffect(() => {
+    iniciarCamera();
+  }, []);
 
-    const iniciarCamera = async () => {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: true,
-            });
-
-            if (videoRef.current) {
-                videoRef.current.srcObject = stream;
-            }
-        }
-        catch(error) {
-            console.error("Erro ao buscar vídeo/imagem: ", error);
-        }
+  const iniciarCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      if (videoRef.current) videoRef.current.srcObject = stream;
+    } catch (error) {
+      console.error("Erro ao acessar a câmera:", error);
     }
+  };
 
-    const tirarFoto = () => {
-        const video = videoRef.current;
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext("2d");
+  const tirarFoto = () => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
 
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const novaFoto = canvas.toDataURL("image/png");
+    setFotos((prevFotos) => [novaFoto, ...prevFotos]);
+  };
 
-        const imagem = canvas.toDataURL("image/png");
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: 20,
+        backgroundColor: "#2aa6b6ff",
+        borderRadius: 12,
+        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+        maxWidth: 600,
+        margin: "0 auto",
+      }}
+    >
+      {/* Área da câmera */}
+      <h2 style={{ marginBottom: 15, color: "#333" }}>🎥 Captura de câmera</h2>
+      <video
+        ref={videoRef}
+        autoPlay
+        playsInline
+        style={{
+          width: "100%",
+          maxWidth: 500,
+          borderRadius: 12,
+          border: "2px solid #007bff",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+        }}
+      />
+      <div style={{ marginTop: 15 }}>
+        <button
+          onClick={tirarFoto}
+          style={{
+            backgroundColor: "#007bff",
+            color: "#fff",
+            border: "none",
+            padding: "10px 20px",
+            borderRadius: 8,
+            cursor: "pointer",
+            fontSize: 16,
+            fontWeight: "bold",
+            transition: "background-color 0.3s",
+          }}
+          onMouseOver={(e) => (e.target.style.backgroundColor = "#0056b3")}
+          onMouseOut={(e) => (e.target.style.backgroundColor = "#007bff")}
+        >
+          Tirar foto
+        </button>
+      </div>
+      <canvas ref={canvasRef} style={{ display: "none" }} />
 
-        setFoto(imagem);
-
-        if (onFotoTirada) {
-            // Permite a comunicação com as props
-            onFotoTirada(imagem);
-        }
-    }
-
-    function reiniciar() {
-        setFoto(null);
-        iniciarCamera();
-    }
-
-    function salvarFoto() {
-        const link = document.createElement("a");
-        link.href = foto;
-        link.download = "Foto.png";
-        link.click();
-    }
-
-    return (
-        <main>
-            <section className="camera-box">
-                <h2>Captura de câmera</h2>
-                <div className="preview">
-                    {!foto ? (
-                        <video ref={videoRef} autoPlay playsInline aria-label="Fluxo de câmera"/>
-                    ) : (
-                        <img src={foto} alt="Foto capturada" />
-                    )}
-                </div>
-                <div>
-                    {!foto ? (
-                        <button type="button" onClick={tirarFoto}>Tirar foto</button>
-                    ) : (
-                        <div>
-                            <button type="button" onClick={reiniciar}>Nova foto</button>
-                            
-                        </div>
-                    )
-                    }
-                </div>
-                <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
-            </section>
-        </main>
-    );
+      {/* Galeria de fotos */}
+      <div style={{ marginTop: 30, width: "100%", textAlign: "center" }}>
+        <h3 style={{ color: "#333" }}>📷 Galeria de fotos</h3>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            gap: 15,
+            marginTop: 10,
+          }}
+        >
+          {fotos.map((foto, index) => (
+            <img
+              key={index}
+              src={foto}
+              alt={`Foto ${index + 1}`}
+              style={{
+                width: 120,
+                borderRadius: 8,
+                border: "2px solid #ccc",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 }

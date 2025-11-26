@@ -1,43 +1,68 @@
-import { Camera } from "../Componentes/Camera";
-import ImageList from '@mui/material/ImageList';
-import ImageListItem from '@mui/material/ImageListItem';
-import { useState } from "react";
+import { useRef, useEffect, useState } from "react";
 
-export function Galeria() {
-    const [fotos, setFotos] = useState(() => {
-        const salvas = localStorage.getItem("fotos");
-        return salvas ? JSON.parse(salvas) : [];
-    });
+export function Camera() {
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [fotos, setFotos] = useState([]);
 
-    // Função de adicionar foto
-    function adicionarFoto(novaFoto) {
-        const novasFotos = [...fotos, novaFoto];
-        setFotos(novasFotos);
-        localStorage.setItem("fotos", JSON.stringify(novasFotos));
+  useEffect(() => {
+    iniciarCamera();
+  }, []);
+
+  const iniciarCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      if (videoRef.current) videoRef.current.srcObject = stream;
+    } catch (error) {
+      console.error("Erro ao acessar a câmera:", error);
     }
+  };
 
-    // Função para limpar a galeria
-    function limparGaleria() {
-        if (!confirm("Deseja limpar sua galeria?")) return;
-        localStorage.removeItem("fotos");
-        setFotos([]);
-    }
+  const tirarFoto = () => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
 
-    return (
-        <main>
-            <button type="button" onClick={limparGaleria}>Limpar galeria</button>
-            <Camera onFotoTirada={adicionarFoto}/>
-            <ImageList sx={{ width: 500, height: 450 }} cols={3} rowHeight={164}>
-            {fotos.map((foto, index) => (
-                <ImageListItem key={index}>
-                <img
-                    src={foto}
-                    alt={`Foto ${index + 1}`}
-                    loading="lazy"
-                />
-                </ImageListItem>
-            ))}
-            </ImageList>
-        </main>
-    );
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    const novaFoto = canvas.toDataURL("image/png");
+    setFotos((prevFotos) => [novaFoto, ...prevFotos]); // adiciona nova foto no topo
+  };
+
+  return (
+    <div>
+      {/* Área da câmera */}
+      <video
+        ref={videoRef}
+        autoPlay
+        playsInline
+        style={{ width: 400, borderRadius: 8 }}
+      />
+      <div style={{ marginTop: 10 }}>
+        <button onClick={tirarFoto}>Tirar foto</button>
+      </div>
+      <canvas ref={canvasRef} style={{ display: "none" }} />
+
+      {/* Galeria de fotos */}
+      <div style={{ marginTop: 20 }}>
+        <h3>📷 Galeria de fotos</h3>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+          {fotos.map((foto, index) => (
+            <img
+              key={index}
+              src={foto}
+              alt={`Foto ${index + 1}`}
+              style={{
+                width: 120,
+                borderRadius: 6,
+                border: "1px solid #ccc",
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 }
