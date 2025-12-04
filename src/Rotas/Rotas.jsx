@@ -6,6 +6,7 @@ import { Missao} from "../Paginas/Missao";
 import { Camera } from "../Componentes/Camera";
 // import { Galeria } from "../Componentes/Galeria";
 import { Inventario } from "../Paginas/Inventario";
+import { Geolocalizacao } from "../Paginas/Geolocalização";
 
 export function Rotas() {
     return (
@@ -17,6 +18,7 @@ export function Rotas() {
                 <Route path="camera" element={<Camera />} />
                 {/* <Route path="galeria" element={<Galeria />} /> */}
                 <Route path="inventario" element={<Inventario />} />
+                <Route path="geolocalizacao" element={<Geolocalizacao/>}/>
             </Route>   
         </Routes>
     );

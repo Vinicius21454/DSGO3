@@ -26,10 +26,13 @@ export function Menu() {
                     </Link>
                 </li>
                 <li>
-                    <figure>
+                    <Link to = "geolocalizacao">
+                     <figure>
                         <img src={mapa} alt="GeoLocalização" />
                         <figcaption>GeoLocalização</figcaption>
                     </figure>
+                    </Link>
+                    
                 </li> 
                 <li>
                     <Link to = 'camera'>
